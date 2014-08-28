@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" 
+    android:id="@+id/main_fragment_menu">
+
+    <item
+        android:id="@+id/main_fragment_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/main_fragment_refresh"
+        android:orderInCategory="100"
+        android:title="refresh"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/main_fragment_map"
+        android:orderInCategory="100"
+        android:title="location on a map"
+        app:showAsAction="never"/>
+
+</menu>
