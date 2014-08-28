@@ -69,13 +69,13 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 	public static final int COL_USER_IMG = 5; 
 	public static final int COL_ANSWERS_JSON = 6;
 	
+	public static final int ASKED_A_QUESTION_TYPE_POST = 0;
+	public static final int ADDED_AN_ANSWER_TYPE_POST = 1;
 	
-	private static final int ASKED_A_QUESTION_TYPE_POST = 0;
-	private static final int ADDED_AN_ANSWER_TYPE_POST = 1;
-	
-	private static final String ASKED_A_QUESTION_TYPE_HEADLINE = "asked a question..";
-	private static final String ADDED_AN_ANSWER_TYPE_HEADLINE = "added and answer..";
+	public static final String ASKED_A_QUESTION_TYPE_HEADLINE = "asked a question..";
+	public static final String ADDED_AN_ANSWER_TYPE_HEADLINE = "added and answer..";
 	private static final String LOG_TAG = "MAIN_FRAGMENT";
+	
 	public MainFragment() {
 	}
 	
@@ -156,89 +156,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 	
 	
 	
-	private class MyListAdapter extends ArrayAdapter<Item> {
-		
-		
-    	private LayoutInflater mInflater;
-    	ArrayList<Item> mObjects;
-    	
-    	public MyListAdapter(Context context, int resource, ArrayList<Item> objects) {
-			super(context, resource, objects);
-			mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mObjects = objects;
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			int type = getItemViewType(position);
-			if(convertView == null) {
-				switch(type){
-					case ADDED_AN_ANSWER_TYPE_POST:
-						
-						convertView = mInflater.inflate(R.layout.list_view_item_question, parent, false);
-						
-					break;
-				case ASKED_A_QUESTION_TYPE_POST:
-						convertView = mInflater.inflate(R.layout.list_view_item_question, parent, false);
-						
-					break;
-				}
-				HolderView holderView = new HolderView();
-				holderView.listItemTextHeadline = (TextView)convertView.findViewById(R.id.ListItemHeadline);
-				holderView.listItemUserName = (TextView)convertView.findViewById(R.id.ListItemUserName);
-				holderView.listItemTextContent = (TextView)convertView.findViewById(R.id.ListItemText);
-				holderView.listItemUserImage = (ImageView)convertView.findViewById(R.id.ListItemUserImg);
-				convertView.setTag(holderView);
-			}
-			
-			HolderView holderView = (HolderView)convertView.getTag();
-			Item item = mObjects.get(position);
-			String headLineStr;
-			switch(type) {
-				case ADDED_AN_ANSWER_TYPE_POST:
-					headLineStr = ADDED_AN_ANSWER_TYPE_HEADLINE;
-				break;
-				case ASKED_A_QUESTION_TYPE_POST:
-					headLineStr = ASKED_A_QUESTION_TYPE_HEADLINE;
-				break;
-				default:
-					headLineStr = ASKED_A_QUESTION_TYPE_HEADLINE;
-			}
-			
-			holderView.listItemTextHeadline.setText(headLineStr);
-			String text = "*";
-			try {
-				text = new String(item.mMessage.getBytes(), "UTF-8");
-			}catch(Exception e) {
-				
-			}
-			holderView.listItemTextContent.setText(Html.fromHtml(text));
-			holderView.listItemUserName.setText(item.mUser);
-			//TODO:holderView.listItemUserImage download + set Image
-			return convertView;
-		}
-		
-		@Override
-		 public int getItemViewType(int position) {
-			return mObjects.get(position).mType;
-//	        return position == 0 ? 0 : 1;
-	    }
-
-		@Override
-	    public int getViewTypeCount() {
-	        return 2;
-	    }
-		
-		private class HolderView{
-			private TextView listItemTextHeadline;
-			private TextView listItemTextContent;
-			private TextView listItemUserName;
-			private ImageView listItemUserImage;
-		}
-	    
-    }
+	
 
 
 	

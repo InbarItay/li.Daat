@@ -32,10 +32,10 @@
             android:name=".SettingsActivity"
             android:label="Settings"
             />
-        <provider
+        <!--<provider
             android:authorities="li.daat"
             android:name=".data.ItemProvider"
-            />
+            />  -->
     </application>
 
 </manifest>
