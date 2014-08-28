@@ -987,10 +987,10 @@ containing a value of this type.
         public static final int ActivityItemContentText=0x7f06003d;
         public static final int ActivityItemHeadLine=0x7f06003c;
         public static final int ListItemHeadline=0x7f060047;
-        public static final int ListItemText=0x7f060049;
+        public static final int ListItemTextAnswer=0x7f060049;
         public static final int ListItemTextContent=0x7f060042;
         public static final int ListItemTextHeadline=0x7f060041;
-        public static final int ListItemTitle=0x7f060048;
+        public static final int ListItemTitleQuestion=0x7f060048;
         public static final int ListItemUserImg=0x7f060045;
         public static final int ListItemUserName=0x7f060046;
         public static final int action_bar=0x7f06001c;

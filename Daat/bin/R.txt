@@ -230,10 +230,10 @@ int drawable ic_launcher 0x7f020057
 int id ActivityItemContentText 0x7f06003d
 int id ActivityItemHeadLine 0x7f06003c
 int id ListItemHeadline 0x7f060047
-int id ListItemText 0x7f060049
+int id ListItemTextAnswer 0x7f060049
 int id ListItemTextContent 0x7f060042
 int id ListItemTextHeadline 0x7f060041
-int id ListItemTitle 0x7f060048
+int id ListItemTitleQuestion 0x7f060048
 int id ListItemUserImg 0x7f060045
 int id ListItemUserName 0x7f060046
 int id action_bar 0x7f06001c

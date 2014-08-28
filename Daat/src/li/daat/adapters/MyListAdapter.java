@@ -1,6 +1,12 @@
-package li.daat;
+package li.daat.adapters;
 
 import java.util.ArrayList;
+
+import li.daat.Item;
+import li.daat.MainFragment;
+import li.daat.R;
+import li.daat.R.id;
+import li.daat.R.layout;
 
 import android.content.Context;
 import android.text.Html;
@@ -43,7 +49,7 @@ public class MyListAdapter extends ArrayAdapter<Item> {
 			HolderView holderView = new HolderView();
 			holderView.listItemTextHeadline = (TextView)convertView.findViewById(R.id.ListItemHeadline);
 			holderView.listItemUserName = (TextView)convertView.findViewById(R.id.ListItemUserName);
-			holderView.listItemTextContent = (TextView)convertView.findViewById(R.id.ListItemText);
+			holderView.listItemTextContent = (TextView)convertView.findViewById(R.id.ListItemTextAnswer);
 			holderView.listItemUserImage = (ImageView)convertView.findViewById(R.id.ListItemUserImg);
 			convertView.setTag(holderView);
 		}
@@ -65,7 +71,7 @@ public class MyListAdapter extends ArrayAdapter<Item> {
 		holderView.listItemTextHeadline.setText(headLineStr);
 		String text = "*";
 		try {
-			text = new String(item.mMessage.getBytes(), "UTF-8");
+			text = new String(item.mQuestion.getBytes(), "UTF-8");
 		}catch(Exception e) {
 			
 		}

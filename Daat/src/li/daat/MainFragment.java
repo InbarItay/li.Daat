@@ -6,24 +6,24 @@ import java.util.List;
 import java.util.Map;
 
 import li.daat.DownloadTask.IDownloadDelegate;
+import li.daat.adapters.MyListAdapter;
+import li.daat.adapters.MySimpleCursorAdapterCallback;
 import li.daat.data.DataContract;
+import li.daat.data.DataContract.ItemEntry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,34 +33,34 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment implements IDownloadDelegate, LoaderCallbacks<Cursor>{
+public class MainFragment extends Fragment implements IDownloadDelegate{
 
-	ListView mListView;
-	MyListAdapter mListAdapter;
+	private ListView mListView;
+	private MyListAdapter mListAdapter;
+	private SimpleCursorAdapter mSimpleCursorAdapter;
+	private MySimpleCursorAdapterCallback mCallback;
 	
 	
 	/*loader*/
 	private static final int lodaerId = 0;
 	private static String mLocation;
-	private static final String[] CURSOR_COLUMNS = {
-		DataContract.ItemEntry.TABLE_NAME + DataContract.ItemEntry._ID,
-		DataContract.ItemEntry.COLUMN_USER_NAME,
-		DataContract.ItemEntry.COLUMN_QUESTION,
-		DataContract.ItemEntry.COLUMN_ANSWER,
-		DataContract.ItemEntry.COLUMN_TYPE,
-		DataContract.ItemEntry.COLUMN_USER_IMG,
-		DataContract.ItemEntry.COLUMN_ANSWERS_JSON
-		
-	};
 	
+	private static final String[] CURSOR_COLUMNS;
+	static {
+		CURSOR_COLUMNS = new String[ItemEntry.ItemColumns.VALUES.length];
+		int i = 0;
+		for (ItemEntry.ItemColumns col: ItemEntry.ItemColumns.VALUES) {
+			CURSOR_COLUMNS[i] = col.toString();
+			i++;
+		}
+	}
+	
+	/*
 	public static final int COL_ID = 0;
 	public static final int COL_USER_NAME = 1;
 	public static final int COL_QUESTION = 2;
@@ -68,6 +68,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 	public static final int COL_TYPE = 4;
 	public static final int COL_USER_IMG = 5; 
 	public static final int COL_ANSWERS_JSON = 6;
+	*/
 	
 	public static final int ASKED_A_QUESTION_TYPE_POST = 0;
 	public static final int ADDED_AN_ANSWER_TYPE_POST = 1;
@@ -90,7 +91,8 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		getLoaderManager().initLoader(lodaerId, null, this);
+		mCallback = new MySimpleCursorAdapterCallback(mSimpleCursorAdapter, getActivity(), CURSOR_COLUMNS);
+		getLoaderManager().initLoader(lodaerId, null, mCallback);
 	}
 	@Override
 	public void onStart() {
@@ -103,6 +105,32 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		mListView = (ListView)rootView.findViewById(R.id.main_list);
+		setupCursorLoaderAdapter();
+		return rootView;
+	}
+	
+	private void setupCursorLoaderAdapter() {
+		mSimpleCursorAdapter = new SimpleCursorAdapter(
+                getActivity(),
+                R.layout.list_view_item_question,
+                null,
+                // the column names to use to fill the textviews
+                new String[]{
+                	DataContract.ItemEntry.ItemColumns.COLUMN_USER_NAME.toString(),
+            		DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION.toString(),
+            		DataContract.ItemEntry.ItemColumns.COLUMN_ANSWER.toString()
+                },
+                // the textviews to fill with the data pulled from the columns above
+                new int[]{
+					R.id.ListItemUserName,
+					R.id.ListItemTitleQuestion,
+					R.id.ListItemTextAnswer
+                },
+                0);
+		mListView.setAdapter(mSimpleCursorAdapter);
+	}
+	
+	private void setupListAdapter() {
 		mListAdapter = new MyListAdapter(getActivity(), R.layout.list_view_item_question, new ArrayList<Item>());
 		mListView.setAdapter(mListAdapter);
 		mListView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
@@ -120,7 +148,6 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 			}
 			
 		});
-		return rootView;
 	}
 	
 	@Override
@@ -153,13 +180,6 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 		inflater.inflate(R.menu.main_fragment_options_menu, menu);
 	}
 	
-	
-	
-	
-	
-
-
-	
 	private void updateData() {
 		DownloadTask dt = new DownloadTask(this);
 		dt.execute((String[])null);
@@ -175,14 +195,37 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 			results = null;
 			return;
 		}
-		mListAdapter.clear();
-//		for (Item item : results) {
-			mListAdapter.addAll(results);
-//		}
+		updateSimpleCursorAdapter(results);
 	} 
 	
-	private List<Item> getResults(String questionsJsonStr)
-            throws JSONException {
+	private void updateSimpleCursorAdapter(List<Item> results) {
+		ContentValues[] cvArray = getContentValues(results);
+		getActivity().getContentResolver().bulkInsert(ItemEntry.CONTENT_URI, cvArray);
+	}
+	
+	private ContentValues[] getContentValues(List<Item>results)
+	{
+		ContentValues[] cvArray = new ContentValues[results.size()];
+		for (int i=0; i < results.size(); i++) {
+			Item result = results.get(i);
+			ContentValues tempCV = new ContentValues();
+			tempCV.put(ItemEntry.ItemColumns.COLUMN_USER_NAME.toString(), result.mUser);
+			tempCV.put(ItemEntry.ItemColumns.COLUMN_QUESTION.toString(), result.mQuestion);
+			tempCV.put(ItemEntry.ItemColumns.COLUMN_ANSWER.toString(), result.mAnswer);
+			tempCV.put(ItemEntry.ItemColumns.COLUMN_TYPE.toString(), result.mType);
+			tempCV.put(ItemEntry.ItemColumns.COLUMN_USER_IMG.toString(), result.mUserPic);
+			tempCV.put(ItemEntry.ItemColumns.COLUMN_ANSWERS_JSON.toString(), result.mAnswersJson);
+			cvArray[i] = tempCV;
+		}
+		return cvArray;
+	}
+	
+	private void updateListAdapter(List<Item> results) {
+		mListAdapter.clear();
+		mListAdapter.addAll(results);
+	}
+	
+	private List<Item> getResults(String questionsJsonStr) throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
         
@@ -200,33 +243,35 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
         List<String> resultStrs = new ArrayList<String>();
         for(int i = 0; i < questionsArray.length(); i++) {
             // For now, using the format "Day, description, hi/low"
-            String userName;
-            String userMessage;
-            
+            String userName ="";
+            String userQuestion="";
+            String userAnswer="";
+            String jsonAnswers="";
             String userImg = "";
-            String title;
+            String title="";
             int type;
             // Get the JSON object representing the day
             JSONObject question = questionsArray.getJSONObject(i);
             title = question.getString(DAAT_TITLE);
             JSONArray answers = question.getJSONArray(DAAT_ANSWERS);
+            userQuestion = question.getString(DAAT_TEXT);
             if(answers.length() == 0) {
             	type = ASKED_A_QUESTION_TYPE_POST;
             	userName = question.getString(DAAT_USERNAME);
-            	userMessage = question.getString(DAAT_TEXT);
             }else {
             	type = ADDED_AN_ANSWER_TYPE_POST;
+            	jsonAnswers = answers.toString();
             	JSONObject answerObject = answers.getJSONObject(0);
-            	userMessage = answerObject.getString(DAAT_ANSWERS_TEXT);
+            	userAnswer = Html.fromHtml(answerObject.getString(DAAT_ANSWERS_TEXT)).toString();
             	JSONObject ownerObject = answerObject.getJSONObject(DAAT_ANSWERS_OWNER);
             	userName = ownerObject.getString(DAAT_ANSWERS_OWNER_FULLNAME);
             	userImg = ownerObject.getString(DAAT_ANSWERS_OWNER_IMGLINK);
             }
-            items.add(new Item(type,userName,userImg,userMessage));
+            items.add(new Item(type,userName,userImg,userQuestion,userAnswer,jsonAnswers));
         }
 
         for (Item item : items) {
-            Log.v(LOG_TAG, "Item entry: " + item.mUser + ", " + item.mMessage + ", " + item.mUserPic);
+            Log.v(LOG_TAG, "Item entry: " + item.mUser + ", " + item.mQuestion + ", " + item.mUserPic);
         }
         return items;
 
@@ -235,21 +280,5 @@ public class MainFragment extends Fragment implements IDownloadDelegate, LoaderC
 	
 	/*loader callback*/
 	
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		// TODO Auto-generated method stub
-		return new CursorLoader(getActivity(), DataContract.ItemEntry.buildItem(),CURSOR_COLUMNS, null, null, null);
-	}
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 }

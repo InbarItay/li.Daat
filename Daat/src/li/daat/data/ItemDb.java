@@ -1,6 +1,7 @@
 package li.daat.data;
 
 import li.daat.data.DataContract.ItemEntry;
+import li.daat.data.DataContract.ItemEntry.ItemColumns;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -19,14 +20,14 @@ public class ItemDb extends SQLiteOpenHelper{
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		final String SQL_CREATE_ITEM_TABLE = "CREATE TABLE " + ItemEntry.TABLE_NAME + " (" +
-                ItemEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ItemEntry.COLUMN_USER_NAME + " TEXT NOT NULL, " +
-                ItemEntry.COLUMN_QUESTION + " TEXT NOT NULL, " +
-                ItemEntry.COLUMN_ANSWER + " TEXT NOT NULL, " +
-                ItemEntry.COLUMN_TYPE + " INTEGER NOT NULL, " +
-                ItemEntry.COLUMN_USER_IMG + " INTEGER NOT NULL, " +
-                ItemEntry.COLUMN_ANSWERS_JSON + " TEXT NOT NULL, " +
-                "UNIQUE( " + ItemEntry.COLUMN_QUESTION + " , " + ItemEntry.COLUMN_USER_NAME + ") ON CONFLICT REPLACE)";
+                ItemEntry.ItemColumns.COLUMN_ID.toString() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ItemEntry.ItemColumns.COLUMN_USER_NAME.toString() + " TEXT NOT NULL, " +
+                ItemEntry.ItemColumns.COLUMN_QUESTION.toString() + " TEXT NOT NULL, " +
+                ItemEntry.ItemColumns.COLUMN_ANSWER.toString() + " TEXT NOT NULL, " +
+                ItemEntry.ItemColumns.COLUMN_TYPE.toString() + " INTEGER NOT NULL, " +
+                ItemEntry.ItemColumns.COLUMN_USER_IMG.toString() + " INTEGER NOT NULL, " +
+                ItemEntry.ItemColumns.COLUMN_ANSWERS_JSON.toString() + " TEXT NOT NULL, " +
+                "UNIQUE( " + ItemEntry.ItemColumns.COLUMN_QUESTION.toString() + " , " + ItemEntry.ItemColumns.COLUMN_USER_NAME.toString() + ") ON CONFLICT REPLACE)";
 		
 		db.execSQL(SQL_CREATE_ITEM_TABLE);		
 	}

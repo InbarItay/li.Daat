@@ -1,11 +1,13 @@
 package li.daat.data;
 
+import li.daat.data.DataContract.ItemEntry.ItemColumns;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 public class ItemProvider extends ContentProvider{
 
@@ -27,10 +29,10 @@ public class ItemProvider extends ContentProvider{
         final String authority = DataContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
-        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.COLUMN_QUESTION + "/*", ITEM_WITH_QUESTION);
-        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.COLUMN_TYPE + "/#", ITEM_WITH_TYPE);
-        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.COLUMN_USER_NAME + "/*", ITEM_WITH_USER_NAME);
-        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry._ID + "/*", ITEM_WITH_ID);
+        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION + "/*", ITEM_WITH_QUESTION);
+        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_TYPE + "/#", ITEM_WITH_TYPE);
+        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_USER_NAME + "/*", ITEM_WITH_USER_NAME);
+        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_ID + "/*", ITEM_WITH_ID);
         matcher.addURI(authority, DataContract.PATH_ITEM , ITEM);
         
         return matcher;
@@ -163,26 +165,32 @@ public class ItemProvider extends ContentProvider{
 		int count = 0;
 		switch (sUriMatcher.match(uri)) {
         	case ITEM:
-        		for(ContentValues value : values) {
+        		try {
         			writeDb.beginTransaction();
-	        		long id = writeDb.insert(DataContract.ItemEntry.TABLE_NAME, null, value);
-	        		if (id!=-1) {
-	        			count++;
-	        		}else {
-	        			writeDb.endTransaction();
-	        			return 0;
+	        		for(ContentValues value : values) {
+	        			
+		        		long id = writeDb.insert(DataContract.ItemEntry.TABLE_NAME, null, value);
+		        		if (id!=-1) {
+		        			count++;
+		        		}else {
+		        			writeDb.endTransaction();
+		        			return 0;
+		        		}
 	        		}
+	        		writeDb.setTransactionSuccessful();
+	        		getContext().getContentResolver().notifyChange(uri, null);
+        		} catch(Exception e) {
+        			Log.d(getClass().getSimpleName(),"couldn't bulk insert");
+        			count = 0;
+        		} finally {
+        			writeDb.endTransaction();
         		}
         		break;
         	default:
         		return super.bulkInsert(uri, values);
 		}
 		
-		writeDb.setTransactionSuccessful();
-		writeDb.endTransaction();
-		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
-		
 	}
 
 	@Override

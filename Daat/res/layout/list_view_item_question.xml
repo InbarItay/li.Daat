@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:orientation="vertical" >
     <RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
-	    android:paddingLeft="4dp"
-	    android:paddingRight="4dp"
+	    android:paddingLeft="1dp"
+	    android:paddingRight="1dp"
 	    android:orientation="horizontal"
 	    android:layout_weight="1" 
 	    android:background="@android:color/white">
@@ -18,7 +18,7 @@
 		    android:id="@+id/ListItemUserImg"
 		    android:layout_width="wrap_content"
 		    android:layout_height="fill_parent"
-		    android:adjustViewBounds="false"
+		    android:adjustViewBounds="true"
 		    android:contentDescription="image"
 		    android:src="@drawable/ic_launcher"
 		    android:background="#fff"
@@ -28,23 +28,12 @@
 		    android:layout_width="wrap_content"
 		    android:layout_height="fill_parent"
 		    android:textColor="@android:color/black"
-		    android:textSize="20sp"
-		    android:gravity="center_vertical"
-		    android:paddingStart="14.5sp"
-		    android:paddingEnd="14.5sp"
-		    android:minHeight="35sp"
-		    android:layout_gravity="top"/>
+		    android:textSize="20sp"/>
 		<TextView
 		    android:id="@+id/ListItemHeadline"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textColor="@android:color/darker_gray"
-		    android:textSize="20sp"
-		    android:gravity="center_vertical"
-		    android:paddingStart="14.5sp"
-		    android:paddingEnd="14.5sp"
-		    android:minHeight="35sp"
-		    android:layout_gravity="bottom"/>
+		    android:textColor="@android:color/darker_gray"/>
 		</RelativeLayout>
 	<LinearLayout
 	    android:layout_width="match_parent"
@@ -55,7 +44,7 @@
 	    android:layout_weight="5"
 	    android:background="#fff">
 	<TextView
-	    android:id="@+id/ListItemTitle"
+	    android:id="@+id/ListItemTitleQuestion"
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
 	    android:textColor="#00ff00"
@@ -67,7 +56,7 @@
 	    android:layout_gravity="top"
 	    android:layout_weight="1"/>
 	<TextView
-	    android:id="@+id/ListItemText"
+	    android:id="@+id/ListItemTextAnswer"
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
 	    android:textColor="@android:color/black"

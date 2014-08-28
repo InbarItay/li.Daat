@@ -30,13 +30,9 @@ public class ItemActivity extends ActionBarActivity{
 			mItem = savedInstanceState.getParcelable(Item.KEY_ITEM_BUNDLE);
 		}
 		
-		mContent.setText(Html.fromHtml(mItem.mMessage));
+		mContent.setText(Html.fromHtml(mItem.mQuestion));
 		mHeadline.setText(mItem.mUser);
 	}
-	
-	
-
-	
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -68,7 +64,7 @@ public class ItemActivity extends ActionBarActivity{
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(mItem.mMessage));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(mItem.mQuestion));
         return shareIntent;
     }
 	
