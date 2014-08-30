@@ -30,13 +30,12 @@ public class ItemActivity extends ActionBarActivity{
 			mItem = savedInstanceState.getParcelable(Item.KEY_ITEM_BUNDLE);
 		}
 		
-		mContent.setText(Html.fromHtml(mItem.mQuestion));
-		mHeadline.setText(mItem.mUser);
+		mContent.setText(Html.fromHtml(mItem.mAnswer));
+		mHeadline.setText(mItem.mQuestionTitle);
 	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		outState.putParcelable(Item.KEY_ITEM_BUNDLE, mItem);
 	}

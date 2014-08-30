@@ -29,7 +29,7 @@ public class ItemProvider extends ContentProvider{
         final String authority = DataContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
-        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION + "/*", ITEM_WITH_QUESTION);
+        matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION_TITLE + "/*", ITEM_WITH_QUESTION);
         matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_TYPE + "/#", ITEM_WITH_TYPE);
         matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_USER_NAME + "/*", ITEM_WITH_USER_NAME);
         matcher.addURI(authority, DataContract.PATH_ITEM + "/" + DataContract.ItemEntry.ItemColumns.COLUMN_ID + "/*", ITEM_WITH_ID);
@@ -195,13 +195,11 @@ public class ItemProvider extends ContentProvider{
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

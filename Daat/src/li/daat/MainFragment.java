@@ -1,6 +1,5 @@
 package li.daat;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -89,13 +87,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Item item = (Item)mListAdapterWrapper.mListAdapter.getItem(position);
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), ItemActivity.class);
-				intent.putExtra(Item.KEY_ITEM_INTENT, item);
-				startActivity(intent);
-				
-				
+				mListAdapterWrapper.onItemClicked(position);
 			}
 			
 		});
@@ -147,13 +139,6 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 			return;
 		}
 		mListAdapterWrapper.updateAdapter(results);
-	} 
-
-	
-	
-	
-	private void updateListAdapter(List<Item> results) {
-		
 	}
 	
 	private List<Item> getResults(String questionsJsonStr) throws JSONException {
@@ -171,7 +156,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 
         JSONArray questionsArray = new JSONArray(questionsJsonStr);
         List<Item> items = new LinkedList<Item>();
-        List<String> resultStrs = new ArrayList<String>();
+        
         for(int i = 0; i < questionsArray.length(); i++) {
             // For now, using the format "Day, description, hi/low"
             String userName ="";
@@ -186,6 +171,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
             title = question.getString(DAAT_TITLE);
             JSONArray answers = question.getJSONArray(DAAT_ANSWERS);
             userQuestion = question.getString(DAAT_TEXT);
+            title = question.getString(DAAT_TITLE);
             if(answers.length() == 0) {
             	type = ASKED_A_QUESTION_TYPE_POST;
             	userName = question.getString(DAAT_USERNAME);
@@ -198,12 +184,9 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
             	userName = ownerObject.getString(DAAT_ANSWERS_OWNER_FULLNAME);
             	userImg = ownerObject.getString(DAAT_ANSWERS_OWNER_IMGLINK);
             }
-            items.add(new Item(type,userName,userImg,userQuestion,userAnswer,jsonAnswers));
+            items.add(new Item(type,userName,userImg,title,userQuestion,userAnswer,jsonAnswers));
         }
-
-        for (Item item : items) {
-            Log.v(LOG_TAG, "Item entry: " + item.mUser + ", " + item.mQuestion + ", " + item.mUserPic);
-        }
+        
         return items;
 
     }

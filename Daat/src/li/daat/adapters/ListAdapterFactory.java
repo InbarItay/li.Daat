@@ -4,22 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import li.daat.Item;
+import li.daat.ItemActivity;
 import li.daat.R;
 import li.daat.data.DataContract;
 import li.daat.data.DataContract.ItemEntry;
+import li.daat.data.DataContract.ItemEntry.ItemColumns;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.BaseAdapter;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.app.Fragment.*;
-import android.content.Context;
-import android.app.Activity;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.database.Cursor;
-import android.support.v4.app.LoaderManager;
 public class ListAdapterFactory {
 	
 	public static abstract class ListAdapterWrapper{
@@ -27,6 +24,15 @@ public class ListAdapterFactory {
 		Context mContext;
 		
 		public abstract void updateAdapter(List<Item> results);
+		public void onItemClicked(int position) {
+			Item item = getItem(position);
+			Intent intent = new Intent();
+			intent.setClass(mContext, ItemActivity.class);
+			intent.putExtra(Item.KEY_ITEM_INTENT, item);
+			mContext.startActivity(intent);
+		}
+		
+		protected abstract Item getItem(int position);
 	}
 	
 	public static enum AdapterTypes{
@@ -35,6 +41,7 @@ public class ListAdapterFactory {
 	}
 	
 	private final AdapterTypes mType;
+	
 	public ListAdapterFactory(AdapterTypes type) {
 		mType = type;
 	}
@@ -42,9 +49,9 @@ public class ListAdapterFactory {
 	public ListAdapterWrapper getAdapterWrapper(Context context) {
 		switch(mType) {
 			case LIST_ADAPTER_TYPE:
-				return new SimpleCursorLoaderWrapper(context);
-			case SIMPLE_CURSOR_ADAPTER_TYPE:
 				return new MyListAdapterWrapper(context);
+			case SIMPLE_CURSOR_ADAPTER_TYPE:
+				return new SimpleCursorLoaderWrapper(context);
 		}
 		return null;
 	}
@@ -56,21 +63,18 @@ public class ListAdapterFactory {
 		/*loader*/
 		private static final int lodaerId = 0;
 		
-		private static final String[] CURSOR_COLUMNS;
-		static {
-			CURSOR_COLUMNS = new String[ItemEntry.ItemColumns.VALUES.length];
-			int i = 0;
-			for (ItemEntry.ItemColumns col: ItemEntry.ItemColumns.VALUES) {
-				CURSOR_COLUMNS[i] = col.toString();
-				i++;
-			}
+		@Override
+		protected Item getItem(int position) {
+			Cursor cursor = (Cursor)mListAdapter.getItem(position);
+			return new Item(cursor);
+			
 		}
 		
 		public SimpleCursorLoaderWrapper(Context context) {
 			mListAdapter = getCursorLoaderAdapter(context);
 			mContext = context;
-			mCallBack = new MySimpleCursorAdapterCallback((SimpleCursorAdapter)mListAdapter, context, CURSOR_COLUMNS);
-			((Activity)context).getLoaderManager().initLoader(lodaerId, null, (LoaderCallbacks<Cursor>)mCallBack);
+			mCallBack = new MySimpleCursorAdapterCallback((SimpleCursorAdapter)mListAdapter, context);
+			((FragmentActivity)context).getSupportLoaderManager().initLoader(lodaerId, null, (LoaderCallbacks<Cursor>)mCallBack);
 		}
 		
 		@Override
@@ -87,8 +91,9 @@ public class ListAdapterFactory {
 	                // the column names to use to fill the textviews
 	                new String[]{
 	                	DataContract.ItemEntry.ItemColumns.COLUMN_USER_NAME.toString(),
-	            		DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION.toString(),
+	            		DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION_TITLE.toString(),
 	            		DataContract.ItemEntry.ItemColumns.COLUMN_ANSWER.toString()
+	            		
 	                },
 	                // the textviews to fill with the data pulled from the columns above
 	                new int[]{
@@ -108,6 +113,7 @@ public class ListAdapterFactory {
 				ContentValues tempCV = new ContentValues();
 				tempCV.put(ItemEntry.ItemColumns.COLUMN_USER_NAME.toString(), result.mUser);
 				tempCV.put(ItemEntry.ItemColumns.COLUMN_QUESTION.toString(), result.mQuestion);
+				tempCV.put(ItemEntry.ItemColumns.COLUMN_QUESTION_TITLE.toString(), result.mQuestionTitle);
 				tempCV.put(ItemEntry.ItemColumns.COLUMN_ANSWER.toString(), result.mAnswer);
 				tempCV.put(ItemEntry.ItemColumns.COLUMN_TYPE.toString(), result.mType);
 				tempCV.put(ItemEntry.ItemColumns.COLUMN_USER_IMG.toString(), result.mUserPic);
@@ -116,6 +122,8 @@ public class ListAdapterFactory {
 			}
 			return cvArray;
 		}
+		
+		
 	}
 	
 	private static class MyListAdapterWrapper extends ListAdapterWrapper{
@@ -134,6 +142,12 @@ public class ListAdapterFactory {
 		public void updateAdapter(List<Item> results) {
 			((MyListAdapter)mListAdapter).clear();
 			((MyListAdapter)mListAdapter).addAll(results);
+		}
+
+		@Override
+		protected Item getItem(int position) {
+			return (Item)mListAdapter.getItem(position);
+			
 		}
 	}
 }

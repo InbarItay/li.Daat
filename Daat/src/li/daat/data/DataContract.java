@@ -23,6 +23,7 @@ public class DataContract {
 			COLUMN_USER_NAME("column_user_name"),
 			COLUMN_USER_IMG("column_user_img"),
 			COLUMN_QUESTION("column_question_text"),
+			COLUMN_QUESTION_TITLE("column_question_title"),
 			COLUMN_ANSWER("column_answer_text"),
 			COLUMN_TYPE("column_type"),
 			COLUMN_ANSWERS_JSON("column_answers_json"),
@@ -40,6 +41,14 @@ public class DataContract {
 
 			public static final ItemColumns[] VALUES = ItemColumns.values();
 
+			public static final String[] VALUES_STR = new String[ItemColumns.VALUES.length];
+			static {
+				int i = 0;
+				for (ItemColumns col : ItemColumns.values()) {
+					VALUES_STR[i] = col.strValue;
+					i++;
+				}
+			}
 			public static ItemColumns get(int value) {
 				if ((value < 0) || (value >= VALUES.length)) {
 					return null;
@@ -76,7 +85,7 @@ public class DataContract {
         }
 
         public static Uri buildItemWithQuestion(String question) {
-        	return CONTENT_URI.buildUpon().appendPath(ItemColumns.COLUMN_QUESTION.toString()).appendPath(question).build();
+        	return CONTENT_URI.buildUpon().appendPath(ItemColumns.COLUMN_QUESTION_TITLE.toString()).appendPath(question).build();
         }
 
 	}

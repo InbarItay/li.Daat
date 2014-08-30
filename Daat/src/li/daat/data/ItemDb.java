@@ -9,12 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ItemDb extends SQLiteOpenHelper{
 
-	public static final int DB_VERSION = 1;
-	public static final String DATABASE_NAME = "item.db";
+	public static final int DB_VERSION = 2;
+	public static final String DATABASE_NAME = "itemzzz.db";
 	
 	public ItemDb(Context context) {
+		
 		super(context, DATABASE_NAME, null, DB_VERSION);
-		// TODO Auto-generated constructor stub
+		context.deleteDatabase(DATABASE_NAME);
 	}
 
 	@Override
@@ -23,11 +24,12 @@ public class ItemDb extends SQLiteOpenHelper{
                 ItemEntry.ItemColumns.COLUMN_ID.toString() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ItemEntry.ItemColumns.COLUMN_USER_NAME.toString() + " TEXT NOT NULL, " +
                 ItemEntry.ItemColumns.COLUMN_QUESTION.toString() + " TEXT NOT NULL, " +
+                ItemEntry.ItemColumns.COLUMN_QUESTION_TITLE.toString() + " TEXT NOT NULL, " +
                 ItemEntry.ItemColumns.COLUMN_ANSWER.toString() + " TEXT NOT NULL, " +
                 ItemEntry.ItemColumns.COLUMN_TYPE.toString() + " INTEGER NOT NULL, " +
                 ItemEntry.ItemColumns.COLUMN_USER_IMG.toString() + " INTEGER NOT NULL, " +
                 ItemEntry.ItemColumns.COLUMN_ANSWERS_JSON.toString() + " TEXT NOT NULL, " +
-                "UNIQUE( " + ItemEntry.ItemColumns.COLUMN_QUESTION.toString() + " , " + ItemEntry.ItemColumns.COLUMN_USER_NAME.toString() + ") ON CONFLICT REPLACE)";
+                "UNIQUE( " + ItemEntry.ItemColumns.COLUMN_QUESTION_TITLE.toString() + " , " + ItemEntry.ItemColumns.COLUMN_USER_NAME.toString() + ") ON CONFLICT REPLACE)";
 		
 		db.execSQL(SQL_CREATE_ITEM_TABLE);		
 	}

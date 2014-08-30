@@ -35,6 +35,7 @@
         <provider
             android:authorities="li.daat"
             android:name=".data.ItemProvider"
+            android:exported="false"
             />
     </application>
 
