@@ -47,6 +47,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 	public static final int COL_ANSWERS_JSON = 6;
 	*/
 	
+	//TODO: switch to enum + move to somewhere better
 	public static final int ASKED_A_QUESTION_TYPE_POST = 0;
 	public static final int ADDED_AN_ANSWER_TYPE_POST = 1;
 	

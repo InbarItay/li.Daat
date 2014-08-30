@@ -99,7 +99,6 @@ public class MyCursorAdapter extends CursorAdapter{
 	
 	@Override
 	public int getViewTypeCount() {
-		// TODO Auto-generated method stub
 		return 2;
 	}
 

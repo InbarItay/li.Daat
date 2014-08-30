@@ -49,7 +49,7 @@ public class MyListAdapter extends ArrayAdapter<Item> {
 			HolderView holderView = new HolderView();
 			holderView.listItemTextHeadline = (TextView)convertView.findViewById(R.id.ListItemHeadlineQuestion);
 			holderView.listItemUserName = (TextView)convertView.findViewById(R.id.ListItemUserNameQuestion);
-//			holderView.listItemTextContent = (TextView)convertView.findViewById(R.id.ListItemTextQ);
+			holderView.listItemTextContent = (TextView)convertView.findViewById(R.id.ListItemTitleQuestion);
 			holderView.listItemUserImage = (ImageView)convertView.findViewById(R.id.ListItemUserImgQuestion);
 			convertView.setTag(holderView);
 		}
@@ -69,13 +69,7 @@ public class MyListAdapter extends ArrayAdapter<Item> {
 		}
 		
 		holderView.listItemTextHeadline.setText(headLineStr);
-		String text = "*";
-		try {
-			text = new String(item.mQuestion.getBytes(), "UTF-8");
-		}catch(Exception e) {
-			
-		}
-		holderView.listItemTextContent.setText(Html.fromHtml(text));
+		holderView.listItemTextContent.setText(Html.fromHtml(item.mQuestion));
 		holderView.listItemUserName.setText(item.mUser);
 		//TODO:holderView.listItemUserImage download + set Image
 		return convertView;
