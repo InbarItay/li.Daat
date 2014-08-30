@@ -6,16 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import li.daat.DownloadTask.IDownloadDelegate;
-import li.daat.adapters.MyListAdapter;
-import li.daat.adapters.MySimpleCursorAdapterCallback;
-import li.daat.data.DataContract;
-import li.daat.data.DataContract.ItemEntry;
+import li.daat.adapters.ListAdapterFactory;
+import li.daat.adapters.ListAdapterFactory.ListAdapterWrapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -23,7 +20,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,24 +37,7 @@ import android.widget.ListView;
 public class MainFragment extends Fragment implements IDownloadDelegate{
 
 	private ListView mListView;
-	private MyListAdapter mListAdapter;
-	private SimpleCursorAdapter mSimpleCursorAdapter;
-	private MySimpleCursorAdapterCallback mCallback;
-	
-	
-	/*loader*/
-	private static final int lodaerId = 0;
-	private static String mLocation;
-	
-	private static final String[] CURSOR_COLUMNS;
-	static {
-		CURSOR_COLUMNS = new String[ItemEntry.ItemColumns.VALUES.length];
-		int i = 0;
-		for (ItemEntry.ItemColumns col: ItemEntry.ItemColumns.VALUES) {
-			CURSOR_COLUMNS[i] = col.toString();
-			i++;
-		}
-	}
+	private ListAdapterWrapper mListAdapterWrapper;
 	
 	/*
 	public static final int COL_ID = 0;
@@ -91,12 +70,10 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		mCallback = new MySimpleCursorAdapterCallback(mSimpleCursorAdapter, getActivity(), CURSOR_COLUMNS);
-		getLoaderManager().initLoader(lodaerId, null, mCallback);
+		
 	}
 	@Override
 	public void onStart() {
-		// TODO Auto-generated method stub
 		super.onStart();
 		updateData();
 	}
@@ -105,40 +82,14 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		mListView = (ListView)rootView.findViewById(R.id.main_list);
-		setupCursorLoaderAdapter();
-		return rootView;
-	}
-	
-	private void setupCursorLoaderAdapter() {
-		mSimpleCursorAdapter = new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.list_view_item_question,
-                null,
-                // the column names to use to fill the textviews
-                new String[]{
-                	DataContract.ItemEntry.ItemColumns.COLUMN_USER_NAME.toString(),
-            		DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION.toString(),
-            		DataContract.ItemEntry.ItemColumns.COLUMN_ANSWER.toString()
-                },
-                // the textviews to fill with the data pulled from the columns above
-                new int[]{
-					R.id.ListItemUserName,
-					R.id.ListItemTitleQuestion,
-					R.id.ListItemTextAnswer
-                },
-                0);
-		mListView.setAdapter(mSimpleCursorAdapter);
-	}
-	
-	private void setupListAdapter() {
-		mListAdapter = new MyListAdapter(getActivity(), R.layout.list_view_item_question, new ArrayList<Item>());
-		mListView.setAdapter(mListAdapter);
+		ListAdapterFactory factory = new ListAdapterFactory(ListAdapterFactory.AdapterTypes.SIMPLE_CURSOR_ADAPTER_TYPE);
+		mListAdapterWrapper = factory.getAdapterWrapper(getActivity());
+		mListView.setAdapter(mListAdapterWrapper.mListAdapter);
 		mListView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// TODO Auto-generated method stub
-				Item item = mListAdapter.getItem(position);
+				Item item = (Item)mListAdapterWrapper.mListAdapter.getItem(position);
 				Intent intent = new Intent();
 				intent.setClass(getActivity(), ItemActivity.class);
 				intent.putExtra(Item.KEY_ITEM_INTENT, item);
@@ -148,6 +99,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 			}
 			
 		});
+		return rootView;
 	}
 	
 	@Override
@@ -187,7 +139,6 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 
 	@Override
 	public void downloadFinished(String result) {
-		// TODO Auto-generated method stub
 		List<Item> results;
 		try {
 			results = getResults(result);
@@ -195,34 +146,14 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 			results = null;
 			return;
 		}
-		updateSimpleCursorAdapter(results);
+		mListAdapterWrapper.updateAdapter(results);
 	} 
+
 	
-	private void updateSimpleCursorAdapter(List<Item> results) {
-		ContentValues[] cvArray = getContentValues(results);
-		getActivity().getContentResolver().bulkInsert(ItemEntry.CONTENT_URI, cvArray);
-	}
 	
-	private ContentValues[] getContentValues(List<Item>results)
-	{
-		ContentValues[] cvArray = new ContentValues[results.size()];
-		for (int i=0; i < results.size(); i++) {
-			Item result = results.get(i);
-			ContentValues tempCV = new ContentValues();
-			tempCV.put(ItemEntry.ItemColumns.COLUMN_USER_NAME.toString(), result.mUser);
-			tempCV.put(ItemEntry.ItemColumns.COLUMN_QUESTION.toString(), result.mQuestion);
-			tempCV.put(ItemEntry.ItemColumns.COLUMN_ANSWER.toString(), result.mAnswer);
-			tempCV.put(ItemEntry.ItemColumns.COLUMN_TYPE.toString(), result.mType);
-			tempCV.put(ItemEntry.ItemColumns.COLUMN_USER_IMG.toString(), result.mUserPic);
-			tempCV.put(ItemEntry.ItemColumns.COLUMN_ANSWERS_JSON.toString(), result.mAnswersJson);
-			cvArray[i] = tempCV;
-		}
-		return cvArray;
-	}
 	
 	private void updateListAdapter(List<Item> results) {
-		mListAdapter.clear();
-		mListAdapter.addAll(results);
+		
 	}
 	
 	private List<Item> getResults(String questionsJsonStr) throws JSONException {
@@ -276,9 +207,4 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
         return items;
 
     }
-
-	
-	/*loader callback*/
-	
-
 }
