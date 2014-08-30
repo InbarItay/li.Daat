@@ -10,16 +10,17 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 
-public class MySimpleCursorAdapterCallback implements LoaderCallbacks<Cursor>{
+public class MyCursorAdapterCallback implements LoaderCallbacks<Cursor>{
 
-	WeakReference<SimpleCursorAdapter> mSimpleCursorAdapter;
+	WeakReference<CursorAdapter> mCursorAdapter;
 	WeakReference<Context> mContext;
 	
-	public MySimpleCursorAdapterCallback(SimpleCursorAdapter cursorAdapter, Context context) {
+	public MyCursorAdapterCallback(CursorAdapter cursorAdapter, Context context) {
 		super();
-		mSimpleCursorAdapter = new WeakReference<SimpleCursorAdapter>(cursorAdapter);
+		mCursorAdapter = new WeakReference<CursorAdapter>(cursorAdapter);
 		mContext = new WeakReference<Context>(context);
 	}
 	
@@ -33,13 +34,13 @@ public class MySimpleCursorAdapterCallback implements LoaderCallbacks<Cursor>{
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-		mSimpleCursorAdapter.get().swapCursor(arg1);
+		mCursorAdapter.get().swapCursor(arg1);
 		
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
-		mSimpleCursorAdapter.get().swapCursor(null);
+		mCursorAdapter.get().swapCursor(null);
 		
 	}
 

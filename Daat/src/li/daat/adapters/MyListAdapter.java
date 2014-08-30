@@ -47,10 +47,10 @@ public class MyListAdapter extends ArrayAdapter<Item> {
 				break;
 			}
 			HolderView holderView = new HolderView();
-			holderView.listItemTextHeadline = (TextView)convertView.findViewById(R.id.ListItemHeadline);
-			holderView.listItemUserName = (TextView)convertView.findViewById(R.id.ListItemUserName);
-			holderView.listItemTextContent = (TextView)convertView.findViewById(R.id.ListItemTextAnswer);
-			holderView.listItemUserImage = (ImageView)convertView.findViewById(R.id.ListItemUserImg);
+			holderView.listItemTextHeadline = (TextView)convertView.findViewById(R.id.ListItemHeadlineQuestion);
+			holderView.listItemUserName = (TextView)convertView.findViewById(R.id.ListItemUserNameQuestion);
+//			holderView.listItemTextContent = (TextView)convertView.findViewById(R.id.ListItemTextQ);
+			holderView.listItemUserImage = (ImageView)convertView.findViewById(R.id.ListItemUserImgQuestion);
 			convertView.setTag(holderView);
 		}
 		

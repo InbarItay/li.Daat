@@ -15,7 +15,7 @@
 	    android:background="@android:color/white">
 	    
 		<ImageView
-		    android:id="@+id/ListItemUserImg"
+		    android:id="@+id/ListItemUserImgQuestion"
 		    android:layout_width="wrap_content"
 		    android:layout_height="fill_parent"
 		    android:adjustViewBounds="true"
@@ -24,18 +24,18 @@
 		    android:background="#fff"
 		    android:layout_weight="1"/>
 		<TextView
-		    android:id="@+id/ListItemUserName"
+		    android:id="@+id/ListItemUserNameQuestion"
 		    android:layout_width="wrap_content"
 		    android:layout_height="fill_parent"
 		    android:textColor="@android:color/black"
 		    android:textSize="20sp"
-		    android:layout_toRightOf="@id/ListItemUserImg"/>
+		    android:layout_toRightOf="@id/ListItemUserImgQuestion"/>
 		<TextView
-		    android:id="@+id/ListItemHeadline"
+		    android:id="@+id/ListItemHeadlineQuestion"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:textColor="@android:color/darker_gray"
-		    android:layout_toRightOf="@id/ListItemUserName"/>
+		    android:layout_toRightOf="@id/ListItemUserNameQuestion"/>
 		</RelativeLayout>
 	<LinearLayout
 	    android:layout_width="match_parent"
@@ -49,15 +49,6 @@
 	    android:id="@+id/ListItemTitleQuestion"
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
-	    android:textSize="20sp"
-	    android:gravity="center_vertical"
-	    android:minHeight="35sp"
-	    android:layout_weight="1"/>
-	<TextView
-	    android:id="@+id/ListItemTextAnswer"
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:textColor="@android:color/black"
 	    android:textSize="20sp"
 	    android:gravity="center_vertical"
 	    android:minHeight="35sp"

@@ -42,6 +42,11 @@ public class Item implements Parcelable {
         return 0;
     }
 
+	/** utility methods */
+	public static int getType(Cursor cursor) {
+		return cursor.getInt(ItemColumns.COLUMN_TYPE.ordinal());
+	}
+	
     /** save object in parcel */
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mType);

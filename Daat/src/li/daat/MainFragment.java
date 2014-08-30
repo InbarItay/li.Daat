@@ -51,7 +51,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 	public static final int ADDED_AN_ANSWER_TYPE_POST = 1;
 	
 	public static final String ASKED_A_QUESTION_TYPE_HEADLINE = "asked a question..";
-	public static final String ADDED_AN_ANSWER_TYPE_HEADLINE = "added and answer..";
+	public static final String ADDED_AN_ANSWER_TYPE_HEADLINE = "added an answer..";
 	private static final String LOG_TAG = "MAIN_FRAGMENT";
 	
 	public MainFragment() {
@@ -80,7 +80,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		mListView = (ListView)rootView.findViewById(R.id.main_list);
-		ListAdapterFactory factory = new ListAdapterFactory(ListAdapterFactory.AdapterTypes.SIMPLE_CURSOR_ADAPTER_TYPE);
+		ListAdapterFactory factory = new ListAdapterFactory(ListAdapterFactory.AdapterTypes.CURSOR_ADAPTER_TYPE);
 		mListAdapterWrapper = factory.getAdapterWrapper(getActivity());
 		mListView.setAdapter(mListAdapterWrapper.mListAdapter);
 		mListView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {

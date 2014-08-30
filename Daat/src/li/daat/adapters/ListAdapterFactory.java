@@ -24,6 +24,9 @@ public class ListAdapterFactory {
 		Context mContext;
 		
 		public abstract void updateAdapter(List<Item> results);
+		
+		protected abstract Item getItem(int position);
+		
 		public void onItemClicked(int position) {
 			Item item = getItem(position);
 			Intent intent = new Intent();
@@ -31,13 +34,11 @@ public class ListAdapterFactory {
 			intent.putExtra(Item.KEY_ITEM_INTENT, item);
 			mContext.startActivity(intent);
 		}
-		
-		protected abstract Item getItem(int position);
 	}
 	
 	public static enum AdapterTypes{
 		LIST_ADAPTER_TYPE(),
-		SIMPLE_CURSOR_ADAPTER_TYPE();
+		CURSOR_ADAPTER_TYPE();
 	}
 	
 	private final AdapterTypes mType;
@@ -50,15 +51,18 @@ public class ListAdapterFactory {
 		switch(mType) {
 			case LIST_ADAPTER_TYPE:
 				return new MyListAdapterWrapper(context);
-			case SIMPLE_CURSOR_ADAPTER_TYPE:
-				return new SimpleCursorLoaderWrapper(context);
+				
+			case CURSOR_ADAPTER_TYPE:
+				return new MyCursorAdapterWrapper(context);
+				
 		}
+		
 		return null;
 	}
 	
-	private static class SimpleCursorLoaderWrapper extends ListAdapterWrapper{
+	private static class MyCursorAdapterWrapper extends ListAdapterWrapper{
 		
-		private MySimpleCursorAdapterCallback mCallBack;
+		private MyCursorAdapterCallback mCallBack;
 		
 		/*loader*/
 		private static final int lodaerId = 0;
@@ -70,10 +74,11 @@ public class ListAdapterFactory {
 			
 		}
 		
-		public SimpleCursorLoaderWrapper(Context context) {
-			mListAdapter = getCursorLoaderAdapter(context);
+		public MyCursorAdapterWrapper(Context context) {
+			Cursor c = context.getContentResolver().query(ItemEntry.CONTENT_URI, null, null, null, null);
+			mListAdapter = new MyCursorAdapter(context, c, true);//getCursorLoaderAdapter(context);
 			mContext = context;
-			mCallBack = new MySimpleCursorAdapterCallback((SimpleCursorAdapter)mListAdapter, context);
+			mCallBack = new MyCursorAdapterCallback((MyCursorAdapter)mListAdapter, context);
 			((FragmentActivity)context).getSupportLoaderManager().initLoader(lodaerId, null, (LoaderCallbacks<Cursor>)mCallBack);
 		}
 		
@@ -82,28 +87,6 @@ public class ListAdapterFactory {
 				ContentValues[] cvArray = getContentValues(results);
 				mContext.getContentResolver().bulkInsert(ItemEntry.CONTENT_URI, cvArray);
 			}
-		
-		private SimpleCursorAdapter getCursorLoaderAdapter(Context context) {
-			SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(
-	                context,
-	                R.layout.list_view_item_question,
-	                null,
-	                // the column names to use to fill the textviews
-	                new String[]{
-	                	DataContract.ItemEntry.ItemColumns.COLUMN_USER_NAME.toString(),
-	            		DataContract.ItemEntry.ItemColumns.COLUMN_QUESTION_TITLE.toString(),
-	            		DataContract.ItemEntry.ItemColumns.COLUMN_ANSWER.toString()
-	            		
-	                },
-	                // the textviews to fill with the data pulled from the columns above
-	                new int[]{
-						R.id.ListItemUserName,
-						R.id.ListItemTitleQuestion,
-						R.id.ListItemTextAnswer
-	                },
-	                0);
-			return cursorAdapter;
-		}
 		
 		private ContentValues[] getContentValues(List<Item>results)
 		{
