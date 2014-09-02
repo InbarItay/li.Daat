@@ -4,9 +4,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import li.daat.DownloadTask.IDownloadDelegate;
 import li.daat.adapters.ListAdapterFactory;
 import li.daat.adapters.ListAdapterFactory.ListAdapterWrapper;
+import li.daat.download.DownloadQuestionsTask;
+import li.daat.download.DownloadQuestionsTask.IDownloadDelegate;
+import li.daat.download.ImagesCachingList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,23 +32,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MainFragment extends Fragment implements IDownloadDelegate{
 
+	private final List<String> imagesPathToLoad = new LinkedList<String>(); 
+	private final static String TAG = MainFragment.class.getSimpleName();
 	private ListView mListView;
 	private ListAdapterWrapper mListAdapterWrapper;
-	
-	/*
-	public static final int COL_ID = 0;
-	public static final int COL_USER_NAME = 1;
-	public static final int COL_QUESTION = 2;
-	public static final int COL_ANSWER = 3;
-	public static final int COL_TYPE = 4;
-	public static final int COL_USER_IMG = 5; 
-	public static final int COL_ANSWERS_JSON = 6;
-	*/
 	
 	//TODO: switch to enum + move to somewhere better
 	public static final int ASKED_A_QUESTION_TYPE_POST = 0;
@@ -55,14 +47,30 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 	public static final String ADDED_AN_ANSWER_TYPE_HEADLINE = "added an answer..";
 	private static final String LOG_TAG = "MAIN_FRAGMENT";
 	
+	/** Defines callbacks for service binding, passed to bindService() */
+//    private ServiceConnection mConnection = new ServiceConnection() {
+//
+//        @Override
+//        public void onServiceConnected(ComponentName className, IBinder service) {
+//            // We've bound to LocalService, cast the IBinder and get LocalService instance
+//            MyBinder binder = (MyBinder) service;
+////            mService = binder.getService();
+////            mBound = true;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName arg0) {
+////            mBound = false;
+//        }
+//    };
+	
 	public MainFragment() {
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -71,11 +79,26 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 		super.onActivityCreated(savedInstanceState);
 		
 	}
+	
 	@Override
 	public void onStart() {
 		super.onStart();
+//		getActivity().bindService(DownloadImagesService.makeIntent(null, getActivity()), mConnection, Context.BIND_AUTO_CREATE);
 		updateData();
 	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+//		getActivity().unbindService(mConnection);
+	}
+	
+	@Override
+	public void onDestroy() {
+		ImagesCachingList.getInstance().deleteCache();
+		super.onDestroy();
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -126,17 +149,17 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
 	}
 	
 	private void updateData() {
-		DownloadTask dt = new DownloadTask(this);
+		DownloadQuestionsTask dt = new DownloadQuestionsTask(this);
 		dt.execute((String[])null);
 	}
-
+	
 	@Override
 	public void downloadFinished(String result) {
 		List<Item> results;
 		try {
 			results = getResults(result);
 		} catch (Exception e) {
-			results = null;
+			Log.e(TAG, "couldn't parse the results");
 			return;
 		}
 		mListAdapterWrapper.updateAdapter(results);
@@ -159,7 +182,6 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
         List<Item> items = new LinkedList<Item>();
         
         for(int i = 0; i < questionsArray.length(); i++) {
-            // For now, using the format "Day, description, hi/low"
             String userName ="";
             String userQuestion="";
             String userAnswer="";
@@ -189,6 +211,7 @@ public class MainFragment extends Fragment implements IDownloadDelegate{
         }
         
         return items;
-
     }
+	
+	
 }

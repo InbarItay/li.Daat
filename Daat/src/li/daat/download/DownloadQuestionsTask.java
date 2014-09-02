@@ -1,4 +1,4 @@
-package li.daat;
+package li.daat.download;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,15 +12,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class DownloadTask extends AsyncTask<String, Integer, String> {
+public class DownloadQuestionsTask extends AsyncTask<String, Integer, String> {
 	final static String QUESTIONS_BASE_URL =
             "http://daat.herokuapp.com/questions/newest";
     final static String QUERY_PARAM = "sinceDate";
 	WeakReference<IDownloadDelegate> mDownloadDelegate;
-	public DownloadTask(IDownloadDelegate downloadDelegate) {
+	public DownloadQuestionsTask(IDownloadDelegate downloadDelegate) {
 		super();
-		mDownloadDelegate = new WeakReference<DownloadTask.IDownloadDelegate>(downloadDelegate);
-		// TODO Auto-generated constructor stub
+		mDownloadDelegate = new WeakReference<DownloadQuestionsTask.IDownloadDelegate>(downloadDelegate);
 	}
 	@Override
 	protected String doInBackground(String... params) {
@@ -33,9 +32,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 		String questionsJsonStr = null;
 		 
 		try {
-		    // Construct the URL for the OpenWeatherMap query
-		    // Possible parameters are available at OWM's forecast API page, at
-		    // http://openweathermap.org/API#forecast
 			
 			URL url;
 			if (params != null) {
@@ -46,10 +42,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 			}else {
 				url= new URL(QUESTIONS_BASE_URL);
 			}
-            
-            ///questions/newest?sinceDate=2014-08-17T20:27:46.285Z
-            
-            
 		 
 		    // Create the request to OpenWeatherMap, and open the connection
 		    urlConnection = (HttpURLConnection) url.openConnection();
@@ -80,7 +72,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 		    questionsJsonStr = buffer.toString();
 		} catch (IOException e) {
 		    Log.e("MainFragment", "Error ", e);
-		    // If the code didn't successfully get the weather data, there's no point in attempting
+		    // If the code didn't successfully get the questions data, there's no point in attempting
 		    // to parse it.
 		    questionsJsonStr = null;
 		} finally{
@@ -100,7 +92,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 
 	@Override
 	protected void onPostExecute(String result) {
-		// TODO Auto-generated method stub
 		super.onPostExecute(result);
 		if (result!=null) {
 			mDownloadDelegate.get().downloadFinished(result);

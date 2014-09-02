@@ -1,6 +1,5 @@
 package li.daat.data;
 
-import li.daat.data.DataContract.ItemEntry.ItemColumns;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;

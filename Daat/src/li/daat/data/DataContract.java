@@ -20,14 +20,14 @@ public class DataContract {
 		
 		/*Columns*/
 		public static enum ItemColumns implements BaseColumns {
+			COLUMN_ID(_ID),
 			COLUMN_USER_NAME("column_user_name"),
-			COLUMN_USER_IMG("column_user_img"),
 			COLUMN_QUESTION("column_question_text"),
 			COLUMN_QUESTION_TITLE("column_question_title"),
 			COLUMN_ANSWER("column_answer_text"),
 			COLUMN_TYPE("column_type"),
-			COLUMN_ANSWERS_JSON("column_answers_json"),
-			COLUMN_ID(_ID);
+			COLUMN_USER_IMG("column_user_img"),
+			COLUMN_ANSWERS_JSON("column_answers_json");
 			private String strValue;
 			
 			@Override

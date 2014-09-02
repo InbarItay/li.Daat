@@ -37,6 +37,7 @@
             android:name=".data.ItemProvider"
             android:exported="false"
             />
+        <service android:name=".download.DownloadImagesService"/>
     </application>
 
 </manifest>
